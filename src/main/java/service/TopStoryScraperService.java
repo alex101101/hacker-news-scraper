@@ -4,8 +4,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 import model.HackerNewsStory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +15,6 @@ public class TopStoryScraperService extends BasicStoryScraperService implements 
     private static final int HACKER_RANK_RESULTS_PER_PAGE = 30;
 
     private WebClient client;
-    private boolean errorFree;
 
     public TopStoryScraperService() {
         super();
@@ -62,7 +59,7 @@ public class TopStoryScraperService extends BasicStoryScraperService implements 
         return newsStoriesComplete;
     }
 
-    private List<HackerNewsStory> parseFrontPageStories(HtmlPage page) throws URISyntaxException {
+    private List<HackerNewsStory> parseFrontPageStories(HtmlPage page) {
         List<HackerNewsStory> newsStories = new ArrayList<HackerNewsStory>();
         int commentCount;
 
@@ -77,7 +74,7 @@ public class TopStoryScraperService extends BasicStoryScraperService implements 
                 String title = stringOrEmpty(storyLink);
 
                 story.setTitle(title);
-                story.setUri(new URI(storyLink.getHrefAttribute()));
+                story.setUri(storyLink.getHrefAttribute());
                 story.setRank(rank);
             }
 

@@ -2,6 +2,7 @@ package model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,8 @@ public class HackerNewsStory {
     @NotNull
     @Size(max = 256)
     public String title;
-    public URI uri;
+    @URL
+    public String uri;
     @NotNull
     @Size(max = 256)
     public String author;
@@ -37,12 +39,12 @@ public class HackerNewsStory {
         this.title = title;
     }
 
-    public URI getUri() {
+    public String getUri() {
         return uri;
     }
 
     @JsonAlias("url")
-    public void setUri(URI uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 

@@ -7,6 +7,10 @@ Scrapes the top stories on Hacker News' front page and outputs the story summari
 ## Useage
 ./hackernews --posts 3
 
+Installed:
+- Java 8 jre/jdk
+- Maven
+
 ## Main Libraries Used
 
 Library              | Description

@@ -1,15 +1,19 @@
 package service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gargoylesoftware.htmlunit.MockWebConnection;
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.*;
 
-public class TopStoryScraperServiceTest {
+import javax.validation.ConstraintViolationException;
+import java.io.IOException;
 
-    @Test
-    public void validHackerStoryTest() throws JsonProcessingException, Exception {
+public class TopStoryScraperServiceTest {
+    protected WebClient client;
+
+    @Before
+    public void setBasePage() throws Exception {
         String html = "<html>\n" +
                 "   <table class=\"itemlist\">\n" +
                 "      <tr class='athing'>\n" +
@@ -24,12 +28,14 @@ public class TopStoryScraperServiceTest {
                 "      <tr class=\"spacer\" style=\"height:5px\"></tr>\n" +
                 "   </table>\n" +
                 "</html>";
-        WebClient client = new WebClient();
+        this.client = new WebClient();
         MockWebConnection connection = new MockWebConnection();
         connection.setDefaultResponse(html);
-        client.setWebConnection(connection);
-        HtmlPage page = client.getPage("https://news.ycombinator.com/news?p=1");
+        this.client.setWebConnection(connection);
+    }
 
+    @Test
+    public void validHackerStoryTest() throws JsonProcessingException, Exception {
         TopStoryScraperService service = new TopStoryScraperService(client);
 
         String result = service.scrapeSite(1);
@@ -42,5 +48,35 @@ public class TopStoryScraperServiceTest {
                 "  \"comments\" : 26,\n" +
                 "  \"rank\" : 1\n" +
                 "} ]");
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void invalidUriStoryTest() throws Exception {
+        HtmlPage page = this.client.getPage("https://news.ycombinator.com/news?p=1");
+        DomElement element = page.getFirstByXPath(".//a[@class='storylink']");
+        element.setAttribute("href", "httQs://cloud.google.co");
+
+        MockWebConnection connection = (MockWebConnection) client.getWebConnection();
+        connection.setDefaultResponse(page.asXml());
+        client.setWebConnection(connection);
+
+        TopStoryScraperService service = new TopStoryScraperService(client);
+
+        String result = service.scrapeSite(1);
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void titleTooLongTest() throws Exception {
+        HtmlPage page = this.client.getPage("https://news.ycombinator.com/news?p=1");
+        DomElement element = page.getFirstByXPath(".//a[@class='storylink']");
+        element.setTextContent("titlettttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
+
+        MockWebConnection connection = (MockWebConnection) client.getWebConnection();
+        connection.setDefaultResponse(page.asXml());
+        client.setWebConnection(connection);
+
+        TopStoryScraperService service = new TopStoryScraperService(client);
+
+        String result = service.scrapeSite(1);
     }
 }
