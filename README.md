@@ -10,6 +10,7 @@ Scrapes the top stories on Hacker News' front page and outputs the story summari
 Installed:
 - Java 8 jre/jdk
 - Maven
+- linux or mac to run bash script
 
 ## Main Libraries Used
 
